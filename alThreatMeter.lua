@@ -1,4 +1,3 @@
-
 -- Config start
 local texture = "Interface\\TargetingFrame\\UI-StatusBar"
 local width, height = 120, 13
