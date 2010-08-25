@@ -1,13 +1,14 @@
 -- Config start
 local texture = "Interface\\TargetingFrame\\UI-StatusBar"
 local width, height = 120, 13
-local font_size = 11
+local font_size = 8
 local anchor = "CENTER"
 local pos_x, pos_y = 0, -185
 local spacing = 3
-local backdrop_color = {0, 0, 0, 0.4}
+local backdrop_color = {0, 0, 0, 0.35}
 local border_color = {0, 0, 0, 1}
 local border_size = 1
+local font = 'Fonts\\SEV7CYR.ttf'
 -- Config end
 
 local backdrop = {
@@ -79,6 +80,7 @@ local CreateBar = function()
 	bar.bg:SetBackdropBorderColor(unpack(border_color))
 	bar.left = CreateFS(bar, font_size)
 	bar.left:SetPoint('LEFT', 2, 0)
+	bar.left:SetPoint('RIGHT', -50, 0)
 	bar.left:SetJustifyH('LEFT')
 	bar.right = CreateFS(bar, font_size)
 	bar.right:SetPoint('RIGHT', -2, 0)
@@ -99,7 +101,7 @@ local UpdateBars = function()
 	for i = 1, #barList do
 		cur = tList[barList[i]]
 		max = tList[barList[1]]
-		if i > 6 or not cur then break end
+		if i > 6 or not cur or cur.pct == 0 then break end
 		if not bar[i] then 
 			bar[i] = CreateBar()
 			bar[i]:SetPoint(anchor, pos_x, pos_y - (13 + spacing) * (i-1))
@@ -126,20 +128,20 @@ local UpdateThreat = function()
 		end
 		CheckUnit("targettarget")
 		CheckUnit("player")
-		UpdateBars()
 	end
+	UpdateBars()
 end
 
 local OnEvent = function(self, event, ...)
 	if event == "PLAYER_TARGET_CHANGED" then
+		wipe(tList)
+		wipe(barList)
 		if UnitExists("target") and not UnitIsDead("target") and not UnitIsPlayer("target") and UnitCanAttack("player", "target") then
 			targeted = true
 		else
 			targeted = false
 		end
-		wipe(tList)
-		wipe(barList)
-		UpdateBars()
+		UpdateThreat()
 	elseif event == "UNIT_THREAT_LIST_UPDATE" then
 		UpdateThreat()
 	elseif event == "PLAYER_REGEN_ENABLED" then
