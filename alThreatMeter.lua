@@ -2,13 +2,14 @@
 local texture = "Interface\\TargetingFrame\\UI-StatusBar"
 local width, height = 120, 13
 local font_size = 8
+local font_style = 'OUTLINEMONOCHROME'
+local font = 'Fonts\\SEV7CYR.ttf'
 local anchor = "CENTER"
 local pos_x, pos_y = 0, -185
 local spacing = 3
 local backdrop_color = {0, 0, 0, 0.35}
 local border_color = {0, 0, 0, 1}
 local border_size = 1
-local font = 'Fonts\\SEV7CYR.ttf'
 -- Config end
 
 local backdrop = {
@@ -26,7 +27,9 @@ RAID_CLASS_COLORS["PET"] = {r = 0, g = 0.7, b = 0,}
 
 local CreateFS = function(frame, fsize, fstyle)
 	local fstring = frame:CreateFontString(nil, 'OVERLAY', 'GameFontHighlight')
-	fstring:SetFont(GameFontNormal:GetFont(), fsize, fstyle)
+	fstring:SetFont(font or GameFontNormal:GetFont(), fsize, fstyle)
+	fstring:SetShadowColor(0, 0, 0, 1)
+	fstring:SetShadowOffset(0, 0)
 	return fstring
 end
 
@@ -78,11 +81,11 @@ local CreateBar = function()
 	bar.bg:SetBackdrop(backdrop)
 	bar.bg:SetBackdropColor(unpack(backdrop_color))
 	bar.bg:SetBackdropBorderColor(unpack(border_color))
-	bar.left = CreateFS(bar, font_size)
+	bar.left = CreateFS(bar, font_size, font_style)
 	bar.left:SetPoint('LEFT', 2, 0)
 	bar.left:SetPoint('RIGHT', -50, 0)
 	bar.left:SetJustifyH('LEFT')
-	bar.right = CreateFS(bar, font_size)
+	bar.right = CreateFS(bar, font_size, font_style)
 	bar.right:SetPoint('RIGHT', -2, 0)
 	bar.right:SetJustifyH('RIGHT')
 	bar:Hide()
