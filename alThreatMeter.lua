@@ -155,3 +155,19 @@ addon:SetScript('OnEvent', OnEvent)
 addon:RegisterEvent("PLAYER_TARGET_CHANGED")
 addon:RegisterEvent("UNIT_THREAT_LIST_UPDATE")
 addon:RegisterEvent("PLAYER_REGEN_ENABLED")
+
+SlashCmdList["alThreat"] = function(msg)
+	for i = 1, 6 do
+		tlist[i] = {
+			name = UnitName("player"),
+			class = select(2, UnitClass("player")),
+			pct = i/6,
+			val = i*10000,
+		}
+		tinsert(barList, i)
+	end
+	UpdateBars()
+	wipe(tList)
+	wipe(barList)
+end
+SLASH_alThreat1 = "/althreat"
