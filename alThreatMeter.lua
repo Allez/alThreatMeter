@@ -136,22 +136,18 @@ local UpdateThreat = function()
 end
 
 local OnEvent = function(self, event, ...)
-	if event == "PLAYER_TARGET_CHANGED" then
-		wipe(tList)
-		wipe(barList)
+	if event == "PLAYER_TARGET_CHANGED" or event == "UNIT_THREAT_LIST_UPDATE" then
 		if UnitExists("target") and not UnitIsDead("target") and not UnitIsPlayer("target") and UnitCanAttack("player", "target") then
 			targeted = true
 		else
 			targeted = false
 		end
-		UpdateThreat()
-	elseif event == "UNIT_THREAT_LIST_UPDATE" then
-		UpdateThreat()
-	elseif event == "PLAYER_REGEN_ENABLED" then
+	end
+	if event == "PLAYER_TARGET_CHANGED" or event == "PLAYER_REGEN_ENABLED" then
 		wipe(tList)
 		wipe(barList)
-		UpdateBars()
 	end
+	UpdateThreat()
 end
 
 local addon = CreateFrame("frame")
