@@ -1,9 +1,9 @@
 -- Config start
 local texture = "Interface\\TargetingFrame\\UI-StatusBar"
 local width, height = 120, 13
-local font_size = 8
+local font = 'Fonts\\VisitorR.TTF'
+local font_size = 10
 local font_style = 'OUTLINEMONOCHROME'
-local font = 'Fonts\\SEV7CYR.ttf'
 local anchor = "CENTER"
 local pos_x, pos_y = 0, -185
 local spacing = 3
@@ -82,11 +82,11 @@ local CreateBar = function()
 	bar.bg:SetBackdropColor(unpack(backdrop_color))
 	bar.bg:SetBackdropBorderColor(unpack(border_color))
 	bar.left = CreateFS(bar, font_size, font_style)
-	bar.left:SetPoint('LEFT', 2, 0)
-	bar.left:SetPoint('RIGHT', -50, 0)
+	bar.left:SetPoint('LEFT', 2, 1)
+	bar.left:SetPoint('RIGHT', -50, 1)
 	bar.left:SetJustifyH('LEFT')
 	bar.right = CreateFS(bar, font_size, font_style)
-	bar.right:SetPoint('RIGHT', -2, 0)
+	bar.right:SetPoint('RIGHT', -2, 1)
 	bar.right:SetJustifyH('RIGHT')
 	bar:Hide()
 	return bar
@@ -158,10 +158,10 @@ addon:RegisterEvent("PLAYER_REGEN_ENABLED")
 
 SlashCmdList["alThreat"] = function(msg)
 	for i = 1, 6 do
-		tlist[i] = {
+		tList[i] = {
 			name = UnitName("player"),
 			class = select(2, UnitClass("player")),
-			pct = i/6,
+			pct = i/6*100,
 			val = i*10000,
 		}
 		tinsert(barList, i)

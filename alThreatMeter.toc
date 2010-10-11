@@ -1,6 +1,6 @@
 ## Interface: 30300
 ## Author: Allez
-## Title: alThreatMeter
+## Title: |cff777777al|rThreatMeter
 ## Version: 30300.1
 ## Notes: Threat meter
 
