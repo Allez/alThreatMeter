@@ -87,7 +87,7 @@ end
 
 local CreateBar = function()
 	local bar = CreateFrame("Statusbar", nil, UIParent)
-	bar:SetSize(config["Bar width"], config["Bar hight"])
+	bar:SetSize(config["Bar width"], config["Bar height"])
 	bar:SetStatusBarTexture(config["Texture"])
 	bar:SetMinMaxValues(0, 100)
 	bar.bg = CreateFrame("Frame", nil, bar)
