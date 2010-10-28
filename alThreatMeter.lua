@@ -12,6 +12,22 @@ local border_color = {0, 0, 0, 1}
 local border_size = 1
 -- Config end
 
+local config = {
+	["Texture"] = texture,
+	["Bar width"] = width,
+	["Bar height"] = height,
+	["Font"] = font,
+	["Font size"] = font_size,
+	["Font style"] = font_style,
+	["Anchor point"] = anchor,
+	["X offset"] = pos_x,
+	["Y offset"] = pos_y,
+	["Bar spacing"] = spacing,
+}
+if UIConfig then
+	UIConfig["Threat Meter"] = config
+end
+
 local backdrop = {
 	bgFile = [=[Interface\ChatFrame\ChatFrameBackground]=],
 	edgeFile = [=[Interface\ChatFrame\ChatFrameBackground]=], edgeSize = border_size,
@@ -71,8 +87,8 @@ end
 
 local CreateBar = function()
 	local bar = CreateFrame("Statusbar", nil, UIParent)
-	bar:SetSize(width, height)
-	bar:SetStatusBarTexture(texture)
+	bar:SetSize(config["Bar width"], config["Bar hight"])
+	bar:SetStatusBarTexture(config["Texture"])
 	bar:SetMinMaxValues(0, 100)
 	bar.bg = CreateFrame("Frame", nil, bar)
 	bar.bg:SetPoint("TOPLEFT", bar, "TOPLEFT", -1, 1)
@@ -81,11 +97,11 @@ local CreateBar = function()
 	bar.bg:SetBackdrop(backdrop)
 	bar.bg:SetBackdropColor(unpack(backdrop_color))
 	bar.bg:SetBackdropBorderColor(unpack(border_color))
-	bar.left = CreateFS(bar, font_size, font_style)
+	bar.left = CreateFS(bar, config["Font size"], config["Font style"])
 	bar.left:SetPoint('LEFT', 2, 1)
 	bar.left:SetPoint('RIGHT', -50, 1)
 	bar.left:SetJustifyH('LEFT')
-	bar.right = CreateFS(bar, font_size, font_style)
+	bar.right = CreateFS(bar, config["Font size"], config["Font style"])
 	bar.right:SetPoint('RIGHT', -2, 1)
 	bar.right:SetJustifyH('RIGHT')
 	bar:Hide()
@@ -107,7 +123,7 @@ local UpdateBars = function()
 		if i > 6 or not cur or cur.pct == 0 then break end
 		if not bar[i] then 
 			bar[i] = CreateBar()
-			bar[i]:SetPoint(anchor, pos_x, pos_y - (13 + spacing) * (i-1))
+			bar[i]:SetPoint(config["Anchor point"], config["X offset"], config["Y offset"] - (13 + config["Bar spacing"]) * (i-1))
 		end
 		bar[i]:SetValue(100 * cur.pct / max.pct)
 		local color = RAID_CLASS_COLORS[cur.class]
