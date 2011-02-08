@@ -1,15 +1,16 @@
 -- Config start
 local texture = "Interface\\TargetingFrame\\UI-StatusBar"
-local width, height = 120, 13
+local width, height = 120, 12
 local font = 'Fonts\\VisitorR.TTF'
 local font_size = 10
 local font_style = 'OUTLINEMONOCHROME'
 local anchor = "CENTER"
-local pos_x, pos_y = 0, -185
-local spacing = 3
+local pos_x, pos_y = 0, -235
+local spacing = 5
 local backdrop_color = {0, 0, 0, 0.35}
 local border_color = {0, 0, 0, 1}
 local border_size = 1
+local visible = 6
 -- Config end
 
 local config = {
@@ -19,10 +20,8 @@ local config = {
 	["Font"] = font,
 	["Font size"] = font_size,
 	["Font style"] = font_style,
-	["Anchor point"] = anchor,
-	["X offset"] = pos_x,
-	["Y offset"] = pos_y,
 	["Bar spacing"] = spacing,
+	["Visible bars"] = visible,
 }
 if UIConfig then
 	UIConfig["Threat Meter"] = config
@@ -33,6 +32,11 @@ local backdrop = {
 	edgeFile = [=[Interface\ChatFrame\ChatFrameBackground]=], edgeSize = border_size,
 	insets = {top = 0, left = 0, bottom = 0, right = 0},
 }
+
+local anchorframe = CreateFrame("Frame", "ThreatMeter", UIParent)
+anchorframe:SetSize(width, height)
+anchorframe:SetPoint(anchor, x, pos_x, pos_y)
+if UIMovableFrames then tinsert(UIMovableFrames, anchorframe) end
 
 local bar, tList, barList = {}, {}, {}
 local max = math.max
@@ -47,6 +51,17 @@ local CreateFS = function(frame, fsize, fstyle)
 	fstring:SetShadowColor(0, 0, 0, 1)
 	fstring:SetShadowOffset(0, 0)
 	return fstring
+end
+
+local CreateBG = CreateBG or function(parent)
+	local bg = CreateFrame("Frame", nil, parent)
+	bg:SetPoint("TOPLEFT", parent, "TOPLEFT", -1, 1)
+	bg:SetPoint("BOTTOMRIGHT", parent, "BOTTOMRIGHT", 1, -1)
+	bg:SetFrameLevel(parent:GetFrameLevel() - 1)
+	bg:SetBackdrop(backdrop)
+	bg:SetBackdropColor(unpack(backdrop_color))
+	bg:SetBackdropBorderColor(unpack(border_color))
+	return bg
 end
 
 local truncate = function(value)
@@ -90,13 +105,7 @@ local CreateBar = function()
 	bar:SetSize(config["Bar width"], config["Bar height"])
 	bar:SetStatusBarTexture(config["Texture"])
 	bar:SetMinMaxValues(0, 100)
-	bar.bg = CreateFrame("Frame", nil, bar)
-	bar.bg:SetPoint("TOPLEFT", bar, "TOPLEFT", -1, 1)
-	bar.bg:SetPoint("BOTTOMRIGHT", bar, "BOTTOMRIGHT", 1, -1)
-	bar.bg:SetFrameStrata("LOW")
-	bar.bg:SetBackdrop(backdrop)
-	bar.bg:SetBackdropColor(unpack(backdrop_color))
-	bar.bg:SetBackdropBorderColor(unpack(border_color))
+	bar.bg = CreateBG(bar)
 	bar.left = CreateFS(bar, config["Font size"], config["Font style"])
 	bar.left:SetPoint('LEFT', 2, 1)
 	bar.left:SetPoint('RIGHT', -50, 1)
@@ -120,10 +129,10 @@ local UpdateBars = function()
 	for i = 1, #barList do
 		cur = tList[barList[i]]
 		max = tList[barList[1]]
-		if i > 6 or not cur or cur.pct == 0 then break end
+		if i > config["Visible bars"] or not cur or cur.pct == 0 then break end
 		if not bar[i] then 
 			bar[i] = CreateBar()
-			bar[i]:SetPoint(config["Anchor point"], config["X offset"], config["Y offset"] - (13 + config["Bar spacing"]) * (i-1))
+			bar[i]:SetPoint("TOP", anchorframe, 0, - (config["Bar height"] + config["Bar spacing"]) * (i-1))
 		end
 		bar[i]:SetValue(100 * cur.pct / max.pct)
 		local color = RAID_CLASS_COLORS[cur.class]
