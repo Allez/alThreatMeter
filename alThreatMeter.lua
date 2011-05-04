@@ -1,9 +1,9 @@
 -- Config start
 local texture = "Interface\\TargetingFrame\\UI-StatusBar"
 local width, height = 120, 12
-local font = 'Fonts\\VisitorR.TTF'
-local font_size = 10
-local font_style = 'OUTLINEMONOCHROME'
+local font = GameFontNormal:GetFont()
+local font_size = 11
+local font_style = 'OUTLINE'
 local anchor = "CENTER"
 local pos_x, pos_y = 0, -235
 local spacing = 5
@@ -13,18 +13,52 @@ local border_size = 1
 local visible = 6
 -- Config end
 
-local config = {
-	["Texture"] = texture,
-	["Bar width"] = width,
-	["Bar height"] = height,
-	["Font"] = font,
-	["Font size"] = font_size,
-	["Font style"] = font_style,
-	["Bar spacing"] = spacing,
-	["Visible bars"] = visible,
-}
-if UIConfig then
-	UIConfig["Threat Meter"] = config
+if IsAddOnLoaded("alInterface") then
+	local cfg = {}
+	local config = {
+		general = {
+			width = {
+				order = 1,
+				value = 120,
+				type = "range",
+				min = 10,
+				max = 400,
+			},
+			barheight = {
+				order = 2,
+				value = 12,
+				type = "range",
+				min = 8,
+				max = 25,
+			},
+			spacing = {
+				order = 3,
+				value = 5,
+				type = "range",
+				min = 0,
+				max = 30,
+			},
+			visiblebars = {
+				order = 4,
+				value = 6,
+				type = "range",
+				min = 1,
+				max = 40,
+			},
+		},
+	}
+
+	UIConfigGUI.threat = config
+	UIConfig.threat = cfg
+
+	local frame = CreateFrame("Frame")
+	frame:RegisterEvent("VARIABLES_LOADED")
+	frame:SetScript("OnEvent", function(self, event)
+		width = cfg.general.width
+		height = cfg.general.barheight
+		spacing = cfg.general.spacing
+		visible = cfg.general.visiblebars
+	end)
 end
 
 local backdrop = {
@@ -45,9 +79,9 @@ local targeted = false
 
 RAID_CLASS_COLORS["PET"] = {r = 0, g = 0.7, b = 0,}
 
-local CreateFS = function(frame, fsize, fstyle)
+local CreateFS = CreateFS or function(frame, fsize, fstyle)
 	local fstring = frame:CreateFontString(nil, 'OVERLAY', 'GameFontHighlight')
-	fstring:SetFont(font or GameFontNormal:GetFont(), fsize, fstyle)
+	fstring:SetFont(font or GameFontNormal:GetFont(), font_size, font_style)
 	fstring:SetShadowColor(0, 0, 0, 1)
 	fstring:SetShadowOffset(0, 0)
 	return fstring
@@ -102,15 +136,15 @@ end
 
 local CreateBar = function()
 	local bar = CreateFrame("Statusbar", nil, UIParent)
-	bar:SetSize(config["Bar width"], config["Bar height"])
-	bar:SetStatusBarTexture(config["Texture"])
+	bar:SetSize(width, height)
+	bar:SetStatusBarTexture(texture)
 	bar:SetMinMaxValues(0, 100)
 	bar.bg = CreateBG(bar)
-	bar.left = CreateFS(bar, config["Font size"], config["Font style"])
+	bar.left = CreateFS(bar)
 	bar.left:SetPoint('LEFT', 2, 1)
 	bar.left:SetPoint('RIGHT', -50, 1)
 	bar.left:SetJustifyH('LEFT')
-	bar.right = CreateFS(bar, config["Font size"], config["Font style"])
+	bar.right = CreateFS(bar)
 	bar.right:SetPoint('RIGHT', -2, 1)
 	bar.right:SetJustifyH('RIGHT')
 	bar:Hide()
@@ -129,10 +163,10 @@ local UpdateBars = function()
 	for i = 1, #barList do
 		cur = tList[barList[i]]
 		max = tList[barList[1]]
-		if i > config["Visible bars"] or not cur or cur.pct == 0 then break end
+		if i > visible or not cur or cur.pct == 0 then break end
 		if not bar[i] then 
 			bar[i] = CreateBar()
-			bar[i]:SetPoint("TOP", anchorframe, 0, - (config["Bar height"] + config["Bar spacing"]) * (i-1))
+			bar[i]:SetPoint("TOP", anchorframe, 0, - (height + spacing) * (i-1))
 		end
 		bar[i]:SetValue(100 * cur.pct / max.pct)
 		local color = RAID_CLASS_COLORS[cur.class]
