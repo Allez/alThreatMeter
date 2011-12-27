@@ -4,8 +4,8 @@ local width, height = 120, 12
 local font = GameFontNormal:GetFont()
 local font_size = 11
 local font_style = 'OUTLINE'
-local anchor = "CENTER"
-local pos_x, pos_y = 0, -235
+local anchor = "BOTTOM"
+local pos_x, pos_y = 0, 265
 local spacing = 5
 local backdrop_color = {0, 0, 0, 0.35}
 local border_color = {0, 0, 0, 1}
@@ -229,4 +229,4 @@ SlashCmdList["alThreat"] = function(msg)
 	wipe(tList)
 	wipe(barList)
 end
-SLASH_alThreat1 = "/althreat"
+SLASH_alThreat1 = "/threat"
